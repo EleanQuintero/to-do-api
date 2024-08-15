@@ -1,0 +1,27 @@
+GET http://localhost:4567/todos
+
+### Crear nuevo todo
+POST  http://localhost:4567/todos/newTodo
+Content-Type: application/json
+
+[
+{
+    "title": "Escuchar pop",
+    "completed": false
+}
+]
+
+### 
+PATCH  http://localhost:4567/todos/update/cec803d6-51f4-11ef-b5d6-040e3cca1ab1
+Content-Type: application/json
+
+{
+    "completed": false
+}
+
+### 
+DELETE http://localhost:4567/todos/delete/fa421007-51fe-11ef-b5d6-040e3cca1ab1
+
+### Borrar tareas completadas
+DELETE http://localhost:4567/todos/completed/delete
+ 

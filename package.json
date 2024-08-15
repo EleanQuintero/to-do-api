@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "app": "node --watch ./app/app.js"
+    "app": "node --watch ./app/app.js",
+    "start":"node ./app/app.js"
   },
   "author": "Eleqful",
   "license": "ISC",

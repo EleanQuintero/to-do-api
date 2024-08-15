@@ -1,6 +1,6 @@
 import { response } from 'express'
 import mysql from 'mysql2/promise'
-import { config } from './config'
+import { config } from './config.js'
 
 const connection = mysql.createConnection(config)
 

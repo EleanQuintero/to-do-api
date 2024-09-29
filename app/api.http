@@ -1,27 +1,28 @@
-GET http://localhost:4567/todos
+GET http://localhost:4567/todos/9dd72db0-6ff2-468e-86ff-872d2b55d0c8
 
 ### Crear nuevo todo
 POST  http://localhost:4567/todos/newTodo
 Content-Type: application/json
 
-[
+
 {
+    "userid": "9dd72db0-6ff2-468e-86ff-872d2b55d0c8",
     "title": "Escuchar pop",
-    "completed": false
+    "todo_status": false
 }
-]
+
 
 ### 
-PATCH  http://localhost:4567/todos/update/cec803d6-51f4-11ef-b5d6-040e3cca1ab1
+PATCH  http://localhost:4567/todos/update/40/9dd72db0-6ff2-468e-86ff-872d2b55d0c8
 Content-Type: application/json
 
 {
-    "completed": false
+    "todo_title": "ver evangelion"
 }
 
 ### 
-DELETE http://localhost:4567/todos/delete/fa421007-51fe-11ef-b5d6-040e3cca1ab1
+DELETE http://localhost:4567/todos/delete/13
 
 ### Borrar tareas completadas
-DELETE http://localhost:4567/todos/completed/delete
+DELETE http://localhost:4567/todos/completed/delete/9dd72db0-6ff2-468e-86ff-872d2b55d0c8
  

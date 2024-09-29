@@ -4,7 +4,8 @@ import { validateTodo, validateUpdate } from '../schemes/todos.js'
 
 export class TodoController {
   static async getAll (req, res) {
-    const todo = await TodosModel.getAll()
+    const { id } = req.params
+    const todo = await TodosModel.getAll(id)
     res.json(todo)
   }
 
@@ -17,6 +18,7 @@ export class TodoController {
 
     const newTodo = await TodosModel.create({ input: result.data })
     console.log('Tarea creada con exito')
+    console.log(newTodo)
     res.status(201).json(newTodo)
   }
 
@@ -26,8 +28,8 @@ export class TodoController {
       return res.status(400).json({ error: JSON.parse(result.error.message) })
     }
 
-    const { id } = req.params
-    const updatedTodo = await TodosModel.update({ id, input: result.data })
+    const { todoID, userID } = req.params
+    const updatedTodo = await TodosModel.update({ todoID, userID, input: result.data })
     return res.json(updatedTodo)
   }
 
@@ -43,7 +45,8 @@ export class TodoController {
   }
 
   static async deleteCompleted (req, res) {
-    const result = await TodosModel.deleteCompleted()
+    const { userID } = req.params
+    const result = await TodosModel.deleteCompleted({ userID })
 
     if (result === false) {
       return res.status(404).json({ message: 'Tareas no encontradas' })

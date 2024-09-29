@@ -13,39 +13,41 @@ const config = {
 const connection = mysql.createConnection(config)
 
 export class TodosModel {
-  static async getAll () {
+  static async getAll (id) {
     const [todos] = await (await connection).query(
-      'select title, completed, id FROM todos;'
+      `select * from todos where user_id ='${id}';`
     )
 
     return todos
   }
 
   static async create ({ input }) {
-    const [{
+    const {
+      userid,
       title,
-      completed
-    }] = input
+      status
+    } = input
 
     try {
       await (await connection).query(
-          `INSERT INTO todos (title, completed) 
-          VALUES (?, ?);`,
-          [title, completed]
+          `INSERT INTO todos (user_id, todo_title, todo_status) 
+          VALUES (?, ?, ?)
+          ;`,
+          [userid, title, status]
       )
     } catch (e) {
       throw new Error('Error al crear el todo')
     }
 
     const [newTodo] = await (await connection).query(
-          `SELECT title, completed, id FROM todos WHERE title = "%${title}%";`
+      'SELECT * FROM todos WHERE todo_title = ? AND user_id = ?;', [title, userid]
     )
     return newTodo[0]
   }
 
-  static async update ({ id, input }) {
+  static async update ({ todoID, userID, input }) {
     try {
-      const [rows] = await (await connection).query(`SELECT * FROM todos WHERE id = ${id}`)
+      const [rows] = await (await connection).query('SELECT * FROM todos WHERE user_id = ? AND todo_id = ? ;', [userID, todoID])
 
       if (rows.length === 0) {
         return response.status(404).json({ message: 'No se encontro el todo' })
@@ -53,9 +55,10 @@ export class TodosModel {
 
       const fields = Object.keys(input).map(key => `${key} = ?`).join(', ')
       const values = Object.values(input)
-      await (await connection).query(`UPDATE todos SET ${fields} WHERE id = ${id}`, [...values])
+      await (await connection).query(`UPDATE todos SET ${fields} WHERE user_id = ? AND todo_id = ?;`, [...values, userID, todoID
+      ])
 
-      const [updatedRows] = await (await connection).query(`SELECT * FROM todos WHERE id = ${id}`)
+      const [updatedRows] = await (await connection).query('SELECT * FROM todos WHERE user_id = ? AND todo_id = ? ;', [userID, todoID])
       return updatedRows[0]
     } catch (error) {
       console.error(error)
@@ -64,24 +67,24 @@ export class TodosModel {
 
   static async delete ({ id }) {
     try {
-      const [rows] = await (await connection).query(`SELECT * FROM todos WHERE id = ${id}`)
+      const [rows] = await (await connection).query('SELECT * FROM todos WHERE todo_id = ?', [id])
 
       if (rows.length === 0) {
         return response.status(404).json({ message: 'No se encontro el todo' })
       }
 
-      await (await connection).query(`DELETE FROM todos  WHERE id = ${id}`)
-      const [updatedRows] = await (await connection).query(`SELECT * FROM todos WHERE id = ${id}`)
+      await (await connection).query('DELETE FROM todos WHERE todo_id = ? ', [id])
+      const [updatedRows] = await (await connection).query('SELECT * FROM todos WHERE todo_id = ? ', [id])
       return updatedRows[0]
     } catch (error) {
       console.error(error)
     }
   }
 
-  static async deleteCompleted () {
+  static async deleteCompleted ({ userID }) {
     try {
       const [todos] = await (await connection).query(
-        'DELETE FROM todos  WHERE completed = 1;'
+        'DELETE FROM todos WHERE user_id = ? AND todo_status = 1;', [userID]
       )
 
       return todos
